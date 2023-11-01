@@ -70,29 +70,23 @@ class Oven:
   def add(self, item):
     self.ingredients.append(item)
 
-  def freeze(self):
+  # Depend of the oven "mode", it will be necesary to follow a certain recipe guide
+  def _search(self, recipe_guide):
     number_of_ingredients = len(self.ingredients)
-    recipes_guide = self.freeze_recipes[number_of_ingredients-1]     #Due to 0 as starting index ponint
-    for recipe in recipes_guide:
-      if recipe["ingredients"] == self.ingredients:
+    x_ingredients_recipe_guide = recipe_guide[number_of_ingredients-1]     #Due to 0 as starting index ponint
+    for recipe in x_ingredients_recipe_guide:
+      if sorted(recipe["ingredients"]) == sorted(self.ingredients):
         self.result = recipe["result"]
         break
+
+  def freeze(self):
+    self._search(self.freeze_recipes)
 
   def boil(self):
-    number_of_ingredients = len(self.ingredients)
-    recipes_guide = self.boil_recipes[number_of_ingredients-1]
-    for recipe in recipes_guide:
-      if recipe["ingredients"] == self.ingredients:
-        self.result = recipe["result"]
-        break
+    self._search(self.boil_recipes)
 
   def wait(self):
-    number_of_ingredients = len(self.ingredients)
-    recipes_guide = self.wait_recipes[number_of_ingredients-1]
-    for recipe in recipes_guide:
-      if recipe["ingredients"] == self.ingredients:
-        self.result = recipe["result"]
-        break
+    self._search(self.wait_recipes)
 
   def get_output(self):
     self.ingredients.clear()
