@@ -1,0 +1,44 @@
+#Sección de Seguridad del Sistema
+
+Teniendo en cuenta el sistema dado y las 10 vulnerabilidades de OWASP Top 10 2021, lo que yo haría para que el sistema fuera más seguro sería:
+ - **A01-2021 Control de acceso defectuoso**: El top 1 de las vulnerabilidades se relaciona con la posibilidad de que los usuarios actúen por fuera de los permisos que deberían tener a través de fallos en el sistema. Para abordar esta gran problemática se plantea:
+	 - Otorgar los permisos específicos para cada usuario que exista en los diferentes componentes del sistema. Por ejemplo, se crearía un usuario "customer_support" que tiene los permisos para consultar la información de los clientes y realizar cambios en los pedidos y las cuentas, pero no más allá de esto.
+	 - Tener presente todas las rutas que tratan con información sensible, de manera que se obligue la autenticación cuando se intente acceder a estas.
+ - **A02-2021 Fallos criptográficos**: Este apartado trata sobre los fallos que se pueden presentar si no se toman medidas en contra del procesamiento de información de forma plana. Para ello tengo en cuenta las siguientes medidas:
+	 - Asegurarse de que no se usan protocolos inseguros en el sistema, como por ejemplo HTTP. En cambio, implementar protocolos de amplio uso por sus características de seguridad, como por ejemplo HTTPS.
+	 - Hace uso de algoritmos de encriptación robustos y que no son anticuados, como por ejemplo Argon2, scrypt, bcrypt.
+	 - Encriptar todos los datos sensibles con los que trate la aplicación.
+	 - Hacer uso de procedimientos de encriptación segura. Por ejemplo, hacer uso de semillas para potenciar el factor aleatorio del cifrado.
+ - **A03-2021 Inyección**: Este ítem hace referencia a la modificación de los datos que son enviados para tratar de ejecutar "código escondido" que puede ser usado para la obtención de información o para causar fallos críticos en el sistema. Para abordar esta problemática buscaría:
+	 - Reducir en la medida de lo posible los espacios en los que el usuario es libre ingresar información con caracteres especiales, como los text área.
+	 - Tratar de modificar la forma en la que se está llevando a cabo la comunicación con la base de datos, intentando implementar un ORM. Por ejemplo, sería una buena idea implementar SQLAlchemy, pues es confiable, seguro y se integra muy bien con FastAPI.
+ - **A04-2021 Diseño inseguro**: Acá se habla sobre los problemas relacionados con un diseño pobre del sistema como tal. Puesto que el sistema ya está construido, yo tomaría las siguientes medidas:
+    - Realizar "testing" en los distintos niveles del sistema (diseño, integración, codificación). Para el sondeo de procedimientos que no se están realizando correctamente. Además de que por el camino es posible llegar a identificar anti patrones y malas prácticas de codificación.
+    - Llevar a cabo procesos de documentación y modelado sobre el mantenimiento y los cambios que se realicen en el sistema. De esta manera será posible identificar problemáticas que se puedan dar mucho antes de siquiera probar software en ejecución.
+ - **A05-2021 Mala configuración de seguridad**: Este ítem trata aquellos aspectos relacionados con la configuración de seguridad del sistema que si no se trata dan paso a grandes brechas de seguridad. Para contrarrestar este planteo las siguientes medidas:
+	 - Configurar Mysql. Esto es cambiar las credenciales base de la base de datos (ej. usuario "root) y crear usuarios específicos para cada integrante que compone el equipo de trabajo. También configuraría el motor de BD para aceptar conexiones solo de un conjunto de IP de confianza.
+	 - Similarmente, a lo anterior, se configuraría el servicio de Kubernetes con usuarios específicos y de confianza para su gestión. 
+	 - Deshabilitar servicios, puertos, conexiones que no se estén utilizando o que puedan representar brechas en la seguridad.
+ - **A06-2021 Componentes vulnerables y obsoletos**: Este apartado trata acerca de los problemas de seguridad que se genera cuando no se realizan procesos de gestión sobre   los componentes del sistema (S.O, SGBD, Framekorks, dependencias, etc.). Para cubrir estos problemas considero las siguientes consideraciones:
+	 - Estar pendiente de reportes de vulnerabilidades como la CVE en busca de problemas relacionados con los componentes del sistema. Esto debido a que si llegase a ocurrir será importante prevenir los problemas relacionados con la vulnerabilidad y actualizar el componente con el parche lanzado para la corrección de seguridad.
+	 - Asegurarse de que los componentes, que se implementen en el sistema, provengan de fuentes confiables y seguras.
+	 - Remover o cambiar aquellos componentes no utilizados, viejos o cuyo soporte se terminó. Evitando así cualquier posible fallo de seguridad proveniente de ellos.
+ - **A07-2021 Fallos de identificación y autenticación**: Este ítem hace referencia a las vulnerabilidades que se pueden presentar debido a un diseño pobre o insuficiente del proceso de identificación y autentificación. Para resolver dicho problema yo realizaría las siguientes acciones:
+	 -  Configurar el mecanismo de registro para que acepte contraseñas lo más seguras posible. Esto es indicar un mínimo de longitud, verificar la presencia de letras, números y caracteres especiales y verificar el uso de mayúsculas y minúsculas.
+	 -  Implementar mecanismos de autentificación de doble factor para reforzar los procesos de inicio de sesión.
+	 - No guardar las contraseñas de forma plana, sino que encriptarlas antes de proceder con su almacenamiento.
+	 - Evitar la exposición de datos de sesión de los usuarios, ya sea a través de URL o del uso de cookies.
+	 - Manejar una política de intentos permitidos para el inicio de sesión de los usuarios. De esta forma se previenen ataques de fuerza bruta.
+	 - Manejar políticas de control de sesiones, como por ejemplo la generación de nuevos tokens con cada inicio de sesión, eliminarlos luego de cerrar sesión o después de un determinado tiempo (expiración de sesiones).
+ - **A08-2021 Fallos en el software y la integridad de los datos**: Acá se hace referencia a las brechas de seguridad en la integridad de software y datos, es decir, la modificación no autorizada de datos y software. Para cubrir este problema tengo en cuenta las siguientes medidas:
+	 - En caso de tener dependencias, asegurarse de que provienen de fuentes confiables. Evitando así las fuentes que buscan realizar inserción maliciosa de código en estos para abrir brechas de seguridad en el sistema.
+	 - Deshabilitar las actualizaciones automáticas de las dependencias. De esta forma se pueden llevar a cabo procesos de revisión para verificar que nada malicioso haya sido introducido en el software externo del que dependemos.
+	 - Habilitar certificados SSL, de esta forma, además de ganar la encriptación de los datos que se envían entre el cliente y el servidor, se añaden procesos de autentificación para que los datos modificados en un entorno público no seguro sean descubiertos y rechazados.
+ - **A09-2021 Fallos en el registro y la supervisión de la seguridad**: Este apartado hace referencia a la ausencia de monitoreo y registros en el sistema. Para dar solución a este problema se tomaría las siguientes acciones:
+	 - Agregar middleware a Fast API para realizar procesos de registro sobre acciones importantes, como por ejemplo el inicio de sesión, los proceso de transacción, el uso de recursos de generación de reportes, entre otros. 
+	 - Hacer uso de herramientas de monitorización para vigilar las principales métricas del sistema, como la carga del mismo. Una buena integración y aplicación al actual sistema sería el uso de Prometheus, pues dicha herramienta se integra muy bien con Kubernetes.
+	 - Establecer alertas en el sistema. Esto mediante la configuración de umbrales que activen eventos de notificación.
+ - **A10-2021 Falsificación de peticiones del lado del servidor**: Este ítem hace referencia a la manipulación maliciosa de peticiones para obtener recursos. Para evitar esto realizaría las siguientes acciones: 
+	 - Validar y definir las URL permitidas, evitando así que los usuarios ingresen a 		 recursos que no deberían.
+	 - Hacer uso de Autentificación y Autorización. Por ejemplo, usar OAuth2 para autentificar a los usuarios que hagan uso de la API. Además de usar los "scopes" para autorizar a grupos de usuarios sobre ciertos recursos, según sea necesario.
+	 - Deshabilitar redireccionamientos para evitar que los usuarios sean redireccionados a recursos internos sensibles.
